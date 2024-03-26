@@ -1,16 +1,22 @@
 package com.javatechie.redis.service;
 
 import com.javatechie.redis.entity.User;
+import com.javatechie.redis.pojo.UserPasswordChangePojo;
+import com.javatechie.redis.pojo.UserReturnType;
 
 import java.util.List;
 
 public interface UserService {
 
-    User save(User product);
+    UserReturnType singUp(User user);
 
-    List<User> findAll();
+    UserReturnType login(User user);
+
+    List<UserReturnType> findAll();
 
     User findUserById(Long id);
 
-    String deleteUser(Long id);
+    String delete(Long id);
+
+    UserReturnType changePassword(UserPasswordChangePojo userPasswordChangePojo);
 }
