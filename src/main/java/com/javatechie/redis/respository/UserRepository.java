@@ -25,7 +25,7 @@ public class UserRepository {
         return template.opsForHash().values(HASH_KEY);
     }
 
-    public User findUserById(Long id) {
+    public User findUserById(String id) {
         return (User) template.opsForHash().get(HASH_KEY, id);
     }
 
@@ -40,7 +40,7 @@ public class UserRepository {
         return null;
     }
 
-    public String delete(Long id) {
+    public String delete(String id) {
         template.opsForHash().delete(HASH_KEY, id);
         return "user removed !!";
     }

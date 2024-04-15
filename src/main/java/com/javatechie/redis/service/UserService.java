@@ -12,11 +12,11 @@ public interface UserService {
 
     UserReturnType login(User user);
 
-    List<UserReturnType> findAll();
+    List<User> findAll();
 
-    User findUserById(Long id);
+    User findUserById(String id);
 
-    String delete(Long id);
+    String delete(String id);
 
     UserReturnType changePassword(UserPasswordChangePojo userPasswordChangePojo);
 }

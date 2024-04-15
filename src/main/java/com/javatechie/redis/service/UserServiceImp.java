@@ -1,16 +1,16 @@
 package com.javatechie.redis.service;
 
 import com.javatechie.redis.entity.User;
+import com.javatechie.redis.mapping.UserMapping;
 import com.javatechie.redis.pojo.UserPasswordChangePojo;
 import com.javatechie.redis.pojo.UserReturnType;
 import com.javatechie.redis.respository.UserRepository;
 import com.javatechie.redis.security.JwtUtil;
+import com.javatechie.redis.validation.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -19,71 +19,69 @@ public class UserServiceImp implements UserService {
     UserRepository userRepository;
 
     @Autowired
+    UserValidation userValidation;
+
+    @Autowired
+    UserMapping userMapping;
+
+    @Autowired
     JwtUtil jwtUtil;
+
+    private UserReturnType userReturnType;
 
     @Override
     public UserReturnType singUp(User user) {
-        user.setJwtToken(generateToken(user.getName()));
-        user = userRepository.save(user);
+        User newUser = new User();
+        user.setId(newUser.getId());
 
-        UserReturnType userReturnType = userMapToUserReturnType(user);
+        if (!userValidation.isThereAnyUserWithSameId(user.getId())) {
+            userReturnType = userMapping.setReturnValuesAsFailed(user);
+        } else {
+            user.setToken(generateToken(user.getName()));
+            userReturnType = userMapping.setReturnValuesAsSuccess(user);
 
+            userRepository.save(user);
+        }
         return userReturnType;
-    }
-
-    public UserReturnType userMapToUserReturnType(User user) {
-        UserReturnType userReturnType = new UserReturnType();
-        userReturnType.setName(user.getName());
-        userReturnType.setToken(user.getJwtToken());
-        return userReturnType;
-    }
-
-    public List<UserReturnType> usersMapToUserReturnType(List<User> users) {
-        return users.stream()
-                .map(user -> {
-                    UserReturnType userReturnPojo = new UserReturnType();
-                    userReturnPojo.setName(user.getName());
-                    userReturnPojo.setToken(user.getJwtToken());
-                    return userReturnPojo;
-                })
-                .collect(Collectors.toList());
     }
 
     @Override
     public UserReturnType login(User user) {
-        User savedUser = findUserById(user.getId());
-
-        if (user.getPassword().equals(savedUser.getPassword()) &&
-                savedUser.getJwtToken().equals(user.getJwtToken())) {
-            UserReturnType userReturnType = userMapToUserReturnType(savedUser);
-            return userReturnType;
-        }
-
-        return null;
+        return userValidation.loginCheckByPasswordAndToken(user) ?
+                userMapping.setReturnValuesAsSuccess(user) : userMapping.setReturnValuesAsFailed(user);
     }
 
 
     @Override
     public UserReturnType changePassword(UserPasswordChangePojo userPasswordChangePojo) {
-        User user = userRepository.findUserByName(userPasswordChangePojo.getName());
-        user.setPassword(userPasswordChangePojo.getNewPassword());
-        User savedUser = userRepository.save(user);
-        return userMapToUserReturnType(savedUser);
+        User user = userRepository.findUserById(userPasswordChangePojo.getId());
+        User savedUser;
+
+        if (!userValidation.checkOldPasswordByNewPassword(userPasswordChangePojo) ||
+                !userValidation.checkNewPasswordByNewPasswordConfirm(userPasswordChangePojo)) {
+            userReturnType = userMapping.setReturnValuesAsFailed(user);
+        } else {
+            user.setPassword(userPasswordChangePojo.getNewPassword());
+            savedUser = userRepository.save(user);
+            userReturnType = userMapping.setReturnValuesAsSuccess(savedUser);
+        }
+
+        return userReturnType;
     }
 
     @Override
-    public List<UserReturnType> findAll() {
+    public List<User> findAll() {
         List<User> users = userRepository.findAll();
-        return usersMapToUserReturnType(users);
+        return users;
     }
 
     @Override
-    public User findUserById(Long id) {
+    public User findUserById(String id) {
         return userRepository.findUserById(id);
     }
 
     @Override
-    public String delete(Long id) {
+    public String delete(String id) {
         return userRepository.delete(id);
     }
 

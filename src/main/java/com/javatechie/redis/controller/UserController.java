@@ -38,17 +38,17 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserReturnType> getAll() {
+    public List<User> getAll() {
         return userService.findAll();
     }
 
     @GetMapping("/{id}")
-    public User findById(@PathVariable Long id) {
+    public User findById(@PathVariable String id) {
         return userService.findUserById(id);
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
+    public String delete(@PathVariable String id) {
         return userService.delete(id);
     }
 
