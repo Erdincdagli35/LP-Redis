@@ -30,7 +30,7 @@ public class UserServiceImp implements UserService {
     private UserReturnType userReturnType;
 
     @Override
-    public UserReturnType singUp(User user) {
+    public UserReturnType signUp(User user) {
         User newUser = new User();
         user.setId(newUser.getId());
 
@@ -54,7 +54,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserReturnType changePassword(UserPasswordChangePojo userPasswordChangePojo) {
-        User user = userRepository.findUserById(userPasswordChangePojo.getId());
+        User user = userRepository.findUserByName(userPasswordChangePojo.getName());
         User savedUser;
 
         if (!userValidation.checkOldPasswordByNewPassword(userPasswordChangePojo) ||

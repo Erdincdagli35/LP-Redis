@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface UserService {
 
-    UserReturnType singUp(User user);
+    UserReturnType signUp(User user);
 
     UserReturnType login(User user);
 

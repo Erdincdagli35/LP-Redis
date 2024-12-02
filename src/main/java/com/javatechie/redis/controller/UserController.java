@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -21,9 +22,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/singUp")
-    public ResponseEntity<UserReturnType> singUp(@RequestBody User user) {
-        return ResponseEntity.ok(userService.singUp(user));
+    @PostMapping("/signUp")
+    public ResponseEntity<UserReturnType> signUp(@RequestBody User user) {
+        return ResponseEntity.ok(userService.signUp(user));
     }
 
     @PutMapping("/changePassword")
