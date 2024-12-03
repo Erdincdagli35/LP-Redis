@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import javax.annotation.Generated;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @RedisHash("User")
 public class User implements Serializable {
+
     @Id
     private String id;
     private String name;

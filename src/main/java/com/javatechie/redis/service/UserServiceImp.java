@@ -3,9 +3,10 @@ package com.javatechie.redis.service;
 import com.javatechie.redis.entity.User;
 import com.javatechie.redis.mapping.UserMapping;
 import com.javatechie.redis.pojo.UserPasswordChangePojo;
+import com.javatechie.redis.pojo.UserPojoReturnType;
 import com.javatechie.redis.pojo.UserReturnType;
 import com.javatechie.redis.respository.UserRepository;
-import com.javatechie.redis.security.JwtUtil;
+import com.javatechie.redis.utils.TokenService;
 import com.javatechie.redis.validation.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,48 +26,29 @@ public class UserServiceImp implements UserService {
     UserMapping userMapping;
 
     @Autowired
-    JwtUtil jwtUtil;
+    TokenService tokenService;
 
     private UserReturnType userReturnType;
 
     @Override
     public UserReturnType signUp(User user) {
-        User newUser = new User();
-        user.setId(newUser.getId());
-
-        if (!userValidation.isThereAnyUserWithSameId(user.getId())) {
-            userReturnType = userMapping.setReturnValuesAsFailed(user);
-        } else {
-            user.setToken(generateToken(user.getName()));
-            userReturnType = userMapping.setReturnValuesAsSuccess(user);
-
-            userRepository.save(user);
-        }
-        return userReturnType;
+        user.setToken(tokenService.generateToken(user.getName()));
+        userRepository.save(user);
+        return userMapping.setReturnValuesAsSuccess(user);
     }
 
     @Override
     public UserReturnType login(User user) {
-        return userValidation.loginCheckByPasswordAndToken(user) ?
-                userMapping.setReturnValuesAsSuccess(user) : userMapping.setReturnValuesAsFailed(user);
+        return userMapping.setReturnValuesAsSuccess(user);
     }
 
 
     @Override
-    public UserReturnType changePassword(UserPasswordChangePojo userPasswordChangePojo) {
+    public UserPojoReturnType changePassword(UserPasswordChangePojo userPasswordChangePojo) {
         User user = userRepository.findUserByName(userPasswordChangePojo.getName());
-        User savedUser;
-
-        if (!userValidation.checkOldPasswordByNewPassword(userPasswordChangePojo) ||
-                !userValidation.checkNewPasswordByNewPasswordConfirm(userPasswordChangePojo)) {
-            userReturnType = userMapping.setReturnValuesAsFailed(user);
-        } else {
-            user.setPassword(userPasswordChangePojo.getNewPassword());
-            savedUser = userRepository.save(user);
-            userReturnType = userMapping.setReturnValuesAsSuccess(savedUser);
-        }
-
-        return userReturnType;
+        user.setPassword(userPasswordChangePojo.getNewPassword());
+        userRepository.save(user);
+        return userMapping.setReturnPojoValuesAsSuccess(userPasswordChangePojo);
     }
 
     @Override
@@ -76,16 +58,12 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User findUserById(String id) {
-        return userRepository.findUserById(id);
+    public User findUserByName(String name) {
+        return userRepository.findUserByName(name);
     }
 
     @Override
-    public String delete(String id) {
-        return userRepository.delete(id);
-    }
-
-    public String generateToken(String name) {
-        return jwtUtil.generateToken(name);
+    public String delete(String name) {
+        return userRepository.delete(name);
     }
 }

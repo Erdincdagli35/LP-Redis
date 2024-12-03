@@ -1,6 +1,8 @@
 package com.javatechie.redis.mapping;
 
 import com.javatechie.redis.entity.User;
+import com.javatechie.redis.pojo.UserPasswordChangePojo;
+import com.javatechie.redis.pojo.UserPojoReturnType;
 import com.javatechie.redis.pojo.UserReturnType;
 import org.springframework.stereotype.Component;
 
@@ -35,8 +37,22 @@ public class UserMapping {
     public UserReturnType setReturnValuesAsFailed(User user) {
         UserReturnType userReturnType = userMapToUserReturnType(user);
         userReturnType.setReturnCode("404");
-        userReturnType.setReturnMessage("The user saved before");
+        userReturnType.setReturnMessage("The user hasn't been log in");
         return userReturnType;
+    }
+
+    public UserPojoReturnType setReturnPojoValuesAsFailed(UserPasswordChangePojo userPasswordChangePojo) {
+        UserPojoReturnType userPojoReturnType = userMapToUserPojoReturnType(userPasswordChangePojo);
+        userPojoReturnType.setReturnCode("404");
+        userPojoReturnType.setReturnMessage("The user hasn't been log in");
+        return userPojoReturnType;
+    }
+
+    public UserPojoReturnType setReturnPojoValuesAsSuccess(UserPasswordChangePojo userPasswordChangePojo) {
+        UserPojoReturnType userPojoReturnType = userMapToUserPojoReturnType(userPasswordChangePojo);
+        userPojoReturnType.setReturnCode("200");
+        userPojoReturnType.setReturnMessage("The user has been success");
+        return userPojoReturnType;
     }
 
     public UserReturnType userMapToUserReturnType(User user) {
@@ -44,6 +60,13 @@ public class UserMapping {
         userReturnType.setName(user.getName());
         userReturnType.setToken(user.getToken());
         return userReturnType;
+    }
+
+    public UserPojoReturnType userMapToUserPojoReturnType(UserPasswordChangePojo userPasswordChangePojo) {
+        UserPojoReturnType userPojoReturnType = new UserPojoReturnType();
+        userPojoReturnType.setName(userPojoReturnType.getName());
+        userPojoReturnType.setToken(userPojoReturnType.getToken());
+        return userPojoReturnType;
     }
 
     public List<UserReturnType> usersMapToUserReturnType(List<User> users) {

@@ -2,6 +2,7 @@ package com.javatechie.redis.service;
 
 import com.javatechie.redis.entity.User;
 import com.javatechie.redis.pojo.UserPasswordChangePojo;
+import com.javatechie.redis.pojo.UserPojoReturnType;
 import com.javatechie.redis.pojo.UserReturnType;
 
 import java.util.List;
@@ -14,9 +15,9 @@ public interface UserService {
 
     List<User> findAll();
 
-    User findUserById(String id);
+    User findUserByName(String name);
 
-    String delete(String id);
+    String delete(String name);
 
-    UserReturnType changePassword(UserPasswordChangePojo userPasswordChangePojo);
+    UserPojoReturnType changePassword(UserPasswordChangePojo userPasswordChangePojo);
 }

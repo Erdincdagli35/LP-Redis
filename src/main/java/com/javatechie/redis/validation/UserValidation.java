@@ -1,6 +1,6 @@
 package com.javatechie.redis.validation;
 
-import com.javatechie.redis.config.UserTokenConfiguration;
+import com.javatechie.redis.utils.TokenService;
 import com.javatechie.redis.entity.User;
 import com.javatechie.redis.pojo.UserPasswordChangePojo;
 import com.javatechie.redis.respository.UserRepository;
@@ -14,20 +14,20 @@ public class UserValidation {
     UserRepository userRepository;
 
     @Autowired
-    UserTokenConfiguration userTokenConfiguration;
+    TokenService tokenService;
 
-    public boolean isThereAnyUserWithSameId(String id) {
-        return userRepository.findUserById(id) == null;
+    public boolean isThereAnyUserWithSameName(String name) {
+        return userRepository.findUserByName(name) != null;
     }
 
     public boolean loginCheckByPasswordAndToken(User user) {
         User savedUser = userRepository.findUserByName(user.getName());
 
-        if (savedUser == null){
+        if (savedUser == null) {
             return false;
         }
 
-        userTokenConfiguration.userTokenSetForLoginProcess(user, savedUser);
+        tokenService.userTokenSetForLoginProcess(user, savedUser);
 
         return user.getPassword().equals(savedUser.getPassword()) &&
                 user.getToken().equals(savedUser.getToken());
