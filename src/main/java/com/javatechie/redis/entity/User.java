@@ -1,18 +1,11 @@
 package com.javatechie.redis.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-import javax.annotation.Generated;
 import java.io.Serializable;
 import java.util.UUID;
 
-@Data
-@AllArgsConstructor
 @RedisHash("User")
 public class User implements Serializable {
 
